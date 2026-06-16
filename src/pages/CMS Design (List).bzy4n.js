@@ -7,11 +7,10 @@ const MAX_WORDS = 20;
 
 $w.onReady(function () {
 
-    //textbox setup
+    // repeater setup
     $w('#listRepeater').onItemReady(($item, itemData) => {
-        // description change
         let rawText = itemData.description || ""; 
-        let wordsArray = rawText.split(/\s+/);
+        let wordsArray = rawText.trim().split(/\s+/).filter(word => word.length > 0);
         
         if (wordsArray.length > MAX_WORDS) {
             let truncatedText = wordsArray.slice(0, MAX_WORDS).join(" ") + "...";
@@ -21,13 +20,13 @@ $w.onReady(function () {
         }
     });
 
-    // refresh
+    //setup
     $w('#dynamicDataset').onReady(() => {
-        runTextTruncation();
+        syncRepeaterWithDataset();
     });
-
+    
     $w('#dynamicDataset').onCurrentIndexChanged(() => {
-        runTextTruncation();
+        syncRepeaterWithDataset();
     });
 
     // search bar
@@ -38,25 +37,23 @@ $w.onReady(function () {
         }, 250);
     });
 
-    // cattegory tags
+    // category tags
     $w('#selectionTags1').onChange(() => {
         executeCombinedFilter();
     });
 });
 
 /**
- * Grabs the raw data from the dataset array and pushes it to the repeater
+ * Grabs the active, filtered data from the dataset and pushes it directly into the repeater.
  */
-function runTextTruncation() {
-    // get items
-    let datasetItems = $w('#dynamicDataset').getCurrentItem() ? [$w('#dynamicDataset').getCurrentItem()] : [];
-    
-    // safety
-    // @ts-ignore
+function syncRepeaterWithDataset() {
     if (typeof $w('#dynamicDataset').getItems === 'function') {
         $w('#dynamicDataset').getItems(0, 100)
             .then((result) => {
-                $w('#listRepeater').data = result.items;
+                $w('#listRepeater').data = result.items; 
+            })
+            .catch((err) => {
+                console.error("Error loading dataset items to repeater:", err);
             });
     }
 }
