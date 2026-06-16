@@ -1,3 +1,7 @@
 {
-  "extends": ["plugin:@wix/cli/recommended"]
+  "extends": ["plugin:@wix/cli/recommended"],
+  "globals": {
+    "$w": "readonly",
+    "wixData": "readonly"
+  }
 }

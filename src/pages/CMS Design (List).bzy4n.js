@@ -1,27 +1,34 @@
 import wixData from 'wix-data';
 
+/** @type {ReturnType<typeof setTimeout>} */
 let debounceTimer;
 
-$w.onReady(function () {
+const ITEM_HEIGHT = 400; // adjust to your card height
+const COLUMNS = 3; // adjust to your columns
 
+$w.onReady(function () {
     $w('#input1').onInput(() => {
-        
-        // clear timer
         clearTimeout(debounceTimer);
-        
-        // wait time after text
         debounceTimer = setTimeout(() => {
             let searchValue = $w('#input1').value;
-            
+
             if (searchValue && searchValue.trim() !== "") {
-                // Filter 
                 $w('#dynamicDataset').setFilter(wixData.filter()
                     .contains('resourceName', searchValue)
-                );
+                ).then(() => {
+                    let count = $w('#dynamicDataset').getTotalCount();
+                    let rows = Math.ceil(count / COLUMNS);
+                    // @ts-ignore
+                    $w('#box1').style.height = (rows * ITEM_HEIGHT) + "px";
+                });
             } else {
-                // empty show everything
-                $w('#dynamicDataset').setFilter(wixData.filter());
+                $w('#dynamicDataset').setFilter(wixData.filter()).then(() => {
+                    let count = $w('#dynamicDataset').getTotalCount();
+                    let rows = Math.ceil(count / COLUMNS);
+                    // @ts-ignore
+                    $w('#box1').style.height = (rows * ITEM_HEIGHT) + "px";
+                });
             }
-        }, 200); 
+        }, 200);
     });
 });
