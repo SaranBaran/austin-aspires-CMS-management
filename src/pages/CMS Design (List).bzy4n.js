@@ -17,6 +17,14 @@ $w.onReady(function () {
         } else {
             $item('#descriptionText').text = rawText;
         }
+        $item('#text133').text = itemData.hasLanguageTranslation
+            ? "☑ Language Translation"
+            : "☐ Language Translation";
+        $item('#text134').text = itemData.referalNeeded
+            ? "☑ Referral Needed"
+            : "☐ Referral Needed";
+        $item('#text132').text = `My learner is: ${(itemData.category && itemData.category[2]) || ""}`;
+        //$item('#container1').style.height = "550px";
     });
 
     $w('#dynamicDataset').onReady(() => {
@@ -37,6 +45,7 @@ $w.onReady(function () {
     $w('#selectionTags1').onChange(() => {
         executeCombinedFilter();
     });
+    
 });
 
 function syncRepeaterWithDataset() {
