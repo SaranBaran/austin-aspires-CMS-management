@@ -23,7 +23,7 @@ $w.onReady(function () {
         $item('#text134').text = itemData.referalNeeded
             ? "☑ Referral Needed"
             : "☐ Referral Needed";
-        $item('#text132').text = `My learner is: ${(itemData.category && itemData.category[2]) || ""}`;
+        $item('#text132').text = "My learner is:" + itemData.myLearnerIs;
         //$item('#container1').style.height = "550px";
     });
 
