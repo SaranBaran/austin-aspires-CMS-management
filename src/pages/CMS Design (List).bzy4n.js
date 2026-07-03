@@ -7,7 +7,6 @@ const MAX_WORDS = 20;
 
 $w.onReady(function () {
 
-    // repeater setup
     $w('#listRepeater').onItemReady(($item, itemData) => {
         let rawText = itemData.description || ""; 
         let wordsArray = rawText.trim().split(/\s+/).filter(word => word.length > 0);
@@ -20,7 +19,6 @@ $w.onReady(function () {
         }
     });
 
-    //setup
     $w('#dynamicDataset').onReady(() => {
         syncRepeaterWithDataset();
     });
@@ -29,7 +27,6 @@ $w.onReady(function () {
         syncRepeaterWithDataset();
     });
 
-    // search bar
     $w('#searchBar').onInput(() => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
@@ -37,15 +34,11 @@ $w.onReady(function () {
         }, 250);
     });
 
-    // category tags
     $w('#selectionTags1').onChange(() => {
         executeCombinedFilter();
     });
 });
 
-/**
- * Grabs the active, filtered data from the dataset and pushes it directly into the repeater.
- */
 function syncRepeaterWithDataset() {
     if (typeof $w('#dynamicDataset').getItems === 'function') {
         $w('#dynamicDataset').getItems(0, 100)
@@ -58,9 +51,7 @@ function syncRepeaterWithDataset() {
     }
 }
 
-/**
- * Compiles search and categories into one joint query
- */
+
 function executeCombinedFilter() {
     let searchValue = $w('#searchBar').value;
     let selectedCategories = $w('#selectionTags1').value;
