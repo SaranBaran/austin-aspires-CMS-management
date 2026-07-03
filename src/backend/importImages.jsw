@@ -1,0 +1,43 @@
+import { mediaManager } from 'wix-media-backend';
+import wixData from 'wix-data';
+
+export async function importAllImages() {
+    const results = await wixData.query('Import1').limit(2).find(); // testing on 2 first
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let item of results.items) {
+        if (item.externalImageUrl && !item.image) {
+            try {
+                const imported = await mediaManager.importFile(
+                    "/resource-images",
+                    item.externalImageUrl,
+                    {
+                        mimeType: "image/jpeg",
+                        mediaType: "image",
+                        mediaOptions: {
+                            mimeType: "image/jpeg",
+                            mediaType: "image"
+                        }
+                    }
+                );
+
+                console.log("SUCCESS:", imported);
+
+                await wixData.update('Import1', {
+                    ...item,
+                    image: imported.fileUrl
+                });
+
+                successCount++;
+                console.log(`Imported image for: ${item.resourceName}`);
+            } catch (err) {
+                failCount++;
+                console.error(`Failed for ${item.resourceName}:`, err);
+            }
+        }
+    }
+
+    return `Done. Success: ${successCount}, Failed: ${failCount}`;
+}
