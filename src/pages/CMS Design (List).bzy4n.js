@@ -30,6 +30,12 @@ $w.onReady(function () {
         // Fade-in on load
         $item('#container1').style.opacity = "0";
         timeline()
+            .add($item('#text1'), { scale: 2, rotate: 15, duration: 1500, easing: 'easeOutCirc' })
+            .play();
+
+
+
+        timeline()
             .add($item('#container1'), { opacity: 1, duration: 600, easing: 'easeOutCirc' })
             .play();
 
