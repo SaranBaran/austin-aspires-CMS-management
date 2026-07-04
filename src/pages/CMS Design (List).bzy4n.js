@@ -7,11 +7,12 @@ let debounceTimer;
 const MAX_WORDS = 20;
 
 $w.onReady(function () {
-    // Hide elements before animating them in
-    $w('#text130').style.opacity = 0;
-    $w('#text131').style.opacity = 0;
-    $w('#searchBarBox').style.opacity = 0;
-    $w('#section1').style.opacity = 0;
+    timeline()
+        .add($w('#text130'), { opacity: 0, duration: 0 })
+        .add($w('#text131'), { opacity: 0, duration: 0 })
+        .add($w('#searchBarBox'), { opacity: 0, duration: 0 })
+        .add($w('#section1'), { opacity: 0, duration: 0 })
+        .play();
 
     // Staggered entrance sequence
     timeline()
@@ -20,7 +21,6 @@ $w.onReady(function () {
         .add($w('#searchBarBox'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
         .add($w('#section1'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
         .play();
-
     $w('#listRepeater').onItemReady(($item, itemData) => {
         let rawText = itemData.description || "";
         let wordsArray = rawText.trim().split(/\s+/).filter(word => word.length > 0);
