@@ -7,6 +7,20 @@ let debounceTimer;
 const MAX_WORDS = 20;
 
 $w.onReady(function () {
+    // Hide elements before animating them in
+    $w('#text130').style.opacity = 0;
+    $w('#text131').style.opacity = 0;
+    $w('#searchBarBox').style.opacity = 0;
+    $w('#section1').style.opacity = 0;
+
+    // Staggered entrance sequence
+    timeline()
+        .add($w('#text130'), { opacity: 1, duration: 700, easing: 'easeOutCirc' })
+        .add($w('#text131'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+        .add($w('#searchBarBox'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+        .add($w('#section1'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+        .play();
+
     $w('#listRepeater').onItemReady(($item, itemData) => {
         let rawText = itemData.description || "";
         let wordsArray = rawText.trim().split(/\s+/).filter(word => word.length > 0);
@@ -27,19 +41,22 @@ $w.onReady(function () {
 
         $item('#text132').text = "My learner is: " + (itemData.myLearnerIs || "");
 
-        // Fade-in on load
-        $item('#container1').style.opacity = "0";
         timeline()
-            .add($item('#text1'), { scale: 2, rotate: 15, duration: 1500, easing: 'easeOutCirc' })
+            .add($item('#container1'), { opacity: 0, duration: 0 })
             .play();
 
+        $item('#container1').onViewportEnter(() => {
+            timeline()
+                .add($item('#container1'), { opacity: 1, duration: 900, easing: 'easeInOutQuad' })
+                .play();
+        });
 
+        $item('#container1').onViewportLeave(() => {
+            timeline()
+                .add($item('#container1'), { opacity: 0, duration: 900, easing: 'easeInOutQuad' })
+                .play();
+        });
 
-        timeline()
-            .add($item('#container1'), { opacity: 1, duration: 600, easing: 'easeOutCirc' })
-            .play();
-
-        // Hover grow effect
         $item('#container1').onMouseIn(() => {
             timeline()
                 .add($item('#container1'), { scale: 1.03, duration: 200, easing: 'easeOutCirc' })
@@ -68,7 +85,15 @@ $w.onReady(function () {
         }, 250);
     });
 
-    $w('#selectionTags1').onChange(() => {
+    $w('#categoryDropdown').onChange(() => {
+        executeCombinedFilter();
+    });
+
+    $w('#serviceDropdown').onChange(() => {
+        executeCombinedFilter();
+    });
+
+    $w('#learnerDropdown').onChange(() => {
         executeCombinedFilter();
     });
 
@@ -94,13 +119,27 @@ function syncRepeaterWithDataset() {
 
 function executeCombinedFilter() {
     let searchValue = $w('#searchBar').value;
-    let selectedCategories = $w('#selectionTags1').value;
+    let selectedCategory = $w('#categoryDropdown').value;
+    let selectedService = $w('#serviceDropdown').value;
+    let selectedLearner = $w('#learnerDropdown').value;
+
     let compoundFilter = wixData.filter();
+
     if (searchValue && searchValue.trim() !== "") {
         compoundFilter = compoundFilter.contains('resourceName', searchValue.trim());
     }
-    if (selectedCategories && selectedCategories.length > 0) {
-        compoundFilter = compoundFilter.hasAll('category', selectedCategories);
+
+    if (selectedCategory && selectedCategory !== "All / Clear") {
+        compoundFilter = compoundFilter.hasSome('category', [selectedCategory]);
     }
+
+    if (selectedService && selectedService !== "All / Clear") {
+        compoundFilter = compoundFilter.hasSome('service', [selectedService]);
+    }
+
+    if (selectedLearner && selectedLearner !== "All / Clear") {
+        compoundFilter = compoundFilter.hasSome('category', [selectedLearner]);
+    }
+
     $w('#dynamicDataset').setFilter(compoundFilter);
 }
