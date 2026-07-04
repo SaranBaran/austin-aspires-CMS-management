@@ -7,20 +7,32 @@ let debounceTimer;
 const MAX_WORDS = 20;
 
 $w.onReady(function () {
-    timeline()
-        .add($w('#text130'), { opacity: 0, duration: 0 })
-        .add($w('#text131'), { opacity: 0, duration: 0 })
-        .add($w('#searchBarBox'), { opacity: 0, duration: 0 })
-        .add($w('#section1'), { opacity: 0, duration: 0 })
-        .play();
+    console.log("Page onReady fired");
 
-    // Staggered entrance sequence
-    timeline()
-        .add($w('#text130'), { opacity: 1, duration: 700, easing: 'easeOutCirc' })
-        .add($w('#text131'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-        .add($w('#searchBarBox'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-        .add($w('#section1'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-        .play();
+    try {
+        timeline()
+            .add($w('#text130'), { opacity: 0, duration: 0 })
+            .add($w('#text131'), { opacity: 0, duration: 0 })
+            .add($w('#searchBarBox'), { opacity: 0, duration: 0 })
+            .add($w('#section1'), { opacity: 0, duration: 0 })
+            .play();
+        console.log("Hide timeline played without error");
+    } catch (err) {
+        console.error("Hide timeline error:", err);
+    }
+
+    try {
+        timeline()
+            .add($w('#text130'), { opacity: 1, duration: 700, easing: 'easeOutCirc' })
+            .add($w('#text131'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+            .add($w('#searchBarBox'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+            .add($w('#section1'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
+            .play();
+        console.log("Show timeline played without error");
+    } catch (err) {
+        console.error("Show timeline error:", err);
+    }
+
     $w('#listRepeater').onItemReady(($item, itemData) => {
         let rawText = itemData.description || "";
         let wordsArray = rawText.trim().split(/\s+/).filter(word => word.length > 0);
