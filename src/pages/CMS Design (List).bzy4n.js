@@ -8,30 +8,19 @@ const MAX_WORDS = 20;
 
 $w.onReady(function () {
     console.log("Page onReady fired");
+    timeline()
+        .add($w('#text130'), { opacity: 0, duration: 0 })
+        .add($w('#text131'), { opacity: 0, duration: 0 })
+        .add($w('#searchBarBox'), { opacity: 0, duration: 0 })
+        .add($w('#section1'), { opacity: 0, duration: 0 })
+        .play();
 
-    try {
-        timeline()
-            .add($w('#text130'), { opacity: 0, duration: 0 })
-            .add($w('#text131'), { opacity: 0, duration: 0 })
-            .add($w('#searchBarBox'), { opacity: 0, duration: 0 })
-            .add($w('#section1'), { opacity: 0, duration: 0 })
-            .play();
-        console.log("Hide timeline played without error");
-    } catch (err) {
-        console.error("Hide timeline error:", err);
-    }
-
-    try {
-        timeline()
-            .add($w('#text130'), { opacity: 1, duration: 700, easing: 'easeOutCirc' })
-            .add($w('#text131'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-            .add($w('#searchBarBox'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-            .add($w('#section1'), { opacity: 1, duration: 700, easing: 'easeOutCirc' }, 200)
-            .play();
-        console.log("Show timeline played without error");
-    } catch (err) {
-        console.error("Show timeline error:", err);
-    }
+    timeline()
+        .add($w('#text130'), { opacity: 1, duration: 1800, easing: 'easeOutCirc' })
+        .add($w('#text131'), { opacity: 1, duration: 1800, easing: 'easeOutCirc' }, 800)
+        .add($w('#searchBarBox'), { opacity: 1, duration: 1800, easing: 'easeOutCirc' }, 800)
+        .add($w('#section1'), { opacity: 1, duration: 1800, easing: 'easeOutCirc' }, 800)
+        .play();
 
     $w('#listRepeater').onItemReady(($item, itemData) => {
         let rawText = itemData.description || "";
