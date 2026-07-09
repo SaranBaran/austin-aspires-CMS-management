@@ -7,9 +7,7 @@ export async function assignImagesFromMediaManager() {
 
     console.log(`Found ${files.length} files in Media Manager`);
 
-    const results = await wixData.query('Import1')
-        .eq('resourceName', 'AB Taxi') // testing on one item first
-        .find();
+    const results = await wixData.query('Import1').limit(100).find();
 
     let successCount = 0;
     let failCount = 0;
