@@ -1,18 +1,21 @@
-import { mediaManager } from 'wix-media-backend';
-import wixData from 'wix-data';
-
 export async function assignImagesFromMediaManager() {
     const fileResult = await mediaManager.listFiles(null, null, { limit: 200 });
     const files = fileResult.files || fileResult;
 
-    console.log(`Found ${files.length} files in Media Manager`);
-
-    const results = await wixData.query('Import1').limit(100).find();
+    const results = await wixData.query('Import1')
+        .hasSome('resourceName', [
+            'Riverland Community College',
+            'Bridge to Benefits',
+            'Wee Learning Center Preschool and Childcare Center'
+        ])
+        .find();
 
     let successCount = 0;
     let failCount = 0;
 
     for (let item of results.items) {
+        console.log(`Checking: ${item.resourceName}, current image: ${item.image}`);
+
         if (!item.externalImageUrl) continue;
 
         const match = item.externalImageUrl.match(/id=([a-zA-Z0-9_-]+)/);
