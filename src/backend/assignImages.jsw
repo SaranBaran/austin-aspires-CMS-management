@@ -1,3 +1,6 @@
+import { mediaManager } from 'wix-media-backend';
+import wixData from 'wix-data';
+
 export async function assignImagesFromMediaManager() {
     const fileResult = await mediaManager.listFiles(null, null, { limit: 200 });
     const files = fileResult.files || fileResult;
