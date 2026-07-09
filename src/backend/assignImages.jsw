@@ -1,0 +1,52 @@
+import { mediaManager } from 'wix-media-backend';
+import wixData from 'wix-data';
+
+export async function assignImagesFromMediaManager() {
+    const fileResult = await mediaManager.listFiles(null, null, { limit: 200 });
+    const files = fileResult.files || fileResult;
+
+    console.log(`Found ${files.length} files in Media Manager`);
+    console.log("Sample file object:", files[0]);
+
+    const results = await wixData.query('Import1')
+        .eq('resourceName', 'AB Taxi') // testing on one item first
+        .find();
+
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let item of results.items) {
+        if (!item.externalImageUrl) continue;
+
+        const match = item.externalImageUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (!match) {
+            failCount++;
+            continue;
+        }
+        const driveId = match[1];
+
+        const matchedFile = files.find(f =>
+            f.displayName && f.displayName.startsWith(driveId)
+        );
+
+        if (!matchedFile) {
+            console.log(`No matching file found for: ${item.resourceName} (${driveId})`);
+            failCount++;
+            continue;
+        }
+
+        try {
+            await wixData.update('Import1', {
+                ...item,
+                image: matchedFile.fileUrl
+            });
+            successCount++;
+            console.log(`Assigned image for: ${item.resourceName}`);
+        } catch (err) {
+            failCount++;
+            console.error(`Failed to update ${item.resourceName}:`, err);
+        }
+    }
+
+    return `Done. Success: ${successCount}, Failed: ${failCount}`;
+}
