@@ -72,11 +72,7 @@ $w.onReady(function () {
     });
 
     $w('#dynamicDataset').onReady(() => {
-        syncRepeaterWithDataset();
-    });
-
-    $w('#dynamicDataset').onCurrentIndexChanged(() => {
-        syncRepeaterWithDataset();
+        executeCombinedFilter();
     });
 
     $w('#searchBar').onInput(() => {
@@ -106,41 +102,35 @@ $w.onReady(function () {
     });
 });
 
-function syncRepeaterWithDataset() {
-    if (typeof $w('#dynamicDataset').getItems === 'function') {
-        $w('#dynamicDataset').getItems(0, 100)
-            .then((result) => {
-                $w('#listRepeater').data = result.items;
-            })
-            .catch((err) => {
-                console.error("Error loading dataset items to repeater:", err);
-            });
-    }
-}
-
 function executeCombinedFilter() {
     let searchValue = $w('#searchBar').value;
     let selectedCategory = $w('#categoryDropdown').value;
     let selectedService = $w('#serviceDropdown').value;
     let selectedLearner = $w('#learnerDropdown').value;
 
-    let compoundFilter = wixData.filter();
+    wixData.query('Import1')
+        .limit(100)
+        .find()
+        .then((results) => {
+            let items = results.items;
 
-    if (searchValue && searchValue.trim() !== "") {
-        compoundFilter = compoundFilter.contains('resourceName', searchValue.trim());
-    }
+            if (searchValue && searchValue.trim() !== "") {
+                const s = searchValue.trim().toLowerCase();
+                items = items.filter(item => (item.resourceName || "").toLowerCase().includes(s));
+            }
+            if (selectedCategory && selectedCategory !== "All / Clear") {
+                items = items.filter(item => (item.category || []).some(c => c.trim() === selectedCategory.trim()));
+            }
+            if (selectedService && selectedService !== "All / Clear") {
+                items = items.filter(item => (item.service || []).some(s => s.trim() === selectedService.trim()));
+            }
+            if (selectedLearner && selectedLearner !== "All / Clear") {
+                items = items.filter(item => (item.category || []).some(c => c.trim() === selectedLearner.trim()));
+            }
 
-    if (selectedCategory && selectedCategory !== "All / Clear") {
-        compoundFilter = compoundFilter.hasSome('category', [selectedCategory]);
-    }
-
-    if (selectedService && selectedService !== "All / Clear") {
-        compoundFilter = compoundFilter.hasSome('service', [selectedService]);
-    }
-
-    if (selectedLearner && selectedLearner !== "All / Clear") {
-        compoundFilter = compoundFilter.contains('category', selectedLearner);
-    }
-
-    $w('#dynamicDataset').setFilter(compoundFilter);
+            $w('#listRepeater').data = items;
+        })
+        .catch((err) => {
+            console.error("Error filtering items:", err);
+        });
 }
