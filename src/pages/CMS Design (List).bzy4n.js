@@ -108,11 +108,17 @@ function executeCombinedFilter() {
     let selectedService = $w('#serviceDropdown').value;
     let selectedLearner = $w('#learnerDropdown').value;
 
+    console.log("selectedLearner value:", JSON.stringify(selectedLearner));
+
     wixData.query('Import1')
         .limit(100)
         .find()
         .then((results) => {
             let items = results.items;
+
+            items.slice(0, 5).forEach(item => {
+                console.log(`${item.resourceName} category:`, JSON.stringify(item.category));
+            });
 
             if (searchValue && searchValue.trim() !== "") {
                 const s = searchValue.trim().toLowerCase();
