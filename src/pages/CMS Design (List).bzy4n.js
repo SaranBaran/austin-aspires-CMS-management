@@ -7,7 +7,6 @@ let debounceTimer;
 const MAX_WORDS = 20;
 
 $w.onReady(function () {
-    console.log("Page onReady fired");
     timeline()
         .add($w('#text130'), { opacity: 0, duration: 0 })
         .add($w('#text131'), { opacity: 0, duration: 0 })
@@ -40,7 +39,7 @@ $w.onReady(function () {
             ? `<span style="font-size:24px; font-family:Avenir; font-weight:bold; color:#2c5f5f;">☑</span> <span style="font-size:11px; font-family:Avenir; font-weight:bold; color:#2c5f5f;">Referral Needed</span>`
             : `<span style="font-size:24px; font-family:Avenir; font-weight:bold; color:#2c5f5f;">☐</span> <span style="font-size:11px; font-family:Avenir; font-weight:bold; color:#2c5f5f;">Referral Needed</span>`;
 
-        $item('#text132').text = "My learner is: " + (itemData.myLearnerIs || "");
+        $item('#text132').text = "My learner is: " + ((itemData.myLearnerIs || []).join(", "));
 
         timeline()
             .add($item('#container1'), { opacity: 0, duration: 0 })
@@ -108,17 +107,11 @@ function executeCombinedFilter() {
     let selectedService = $w('#serviceDropdown').value;
     let selectedLearner = $w('#learnerDropdown').value;
 
-    console.log("selectedLearner value:", JSON.stringify(selectedLearner));
-
     wixData.query('Import1')
         .limit(100)
         .find()
         .then((results) => {
             let items = results.items;
-
-            items.slice(0, 5).forEach(item => {
-                console.log(`${item.resourceName} category:`, JSON.stringify(item.category));
-            });
 
             if (searchValue && searchValue.trim() !== "") {
                 const s = searchValue.trim().toLowerCase();
@@ -131,7 +124,7 @@ function executeCombinedFilter() {
                 items = items.filter(item => (item.service || []).some(s => s.trim() === selectedService.trim()));
             }
             if (selectedLearner && selectedLearner !== "All / Clear") {
-                items = items.filter(item => (item.category || []).some(c => c.trim() === selectedLearner.trim()));
+                items = items.filter(item => (item.myLearnerIs || []).some(l => l.trim() === selectedLearner.trim()));
             }
 
             $w('#listRepeater').data = items;
