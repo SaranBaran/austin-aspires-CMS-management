@@ -139,7 +139,7 @@ function executeCombinedFilter() {
     }
 
     if (selectedLearner && selectedLearner !== "All / Clear") {
-        compoundFilter = compoundFilter.hasSome('category', [selectedLearner]);
+        compoundFilter = compoundFilter.contains('category', selectedLearner);
     }
 
     $w('#dynamicDataset').setFilter(compoundFilter);
